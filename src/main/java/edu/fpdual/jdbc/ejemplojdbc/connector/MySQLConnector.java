@@ -1,13 +1,20 @@
 package edu.fpdual.jdbc.ejemplojdbc.connector;
 
+import edu.fpdual.jdbc.ejemplojdbc.dao.City;
+import edu.fpdual.jdbc.ejemplojdbc.manager.impl.CityManagerImpl;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Class responsible for creation of MySQL DB connection.
@@ -70,9 +77,35 @@ public class MySQLConnector {
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        ejemploPreparedStatement();
+    }
+
+    private static void ejemploStatement() throws SQLException, ClassNotFoundException {
         MySQLConnector connector = new MySQLConnector();
-        Connection connection = connector.getMySQLConnection();
-        System.out.println(connection.getCatalog());
+
+        try(Connection connection = connector.getMySQLConnection();
+            Statement stm = connection.createStatement()) {
+            ResultSet result = stm.executeQuery("SELECT Id, Name, District FROM world.city where CountryCode = 'ESP'");
+
+            int counter = 0;
+            result.beforeFirst();
+            while (result.next()) {
+                int id = result.getInt("Id");
+                String name = result.getString("Name");
+                String district = result.getString("District");
+                System.out.println(id + " " + name + " " + district);
+                counter++;
+            }
+            System.out.println("Total de elementos: " + counter);
+        }
+    }
+
+    private static void ejemploPreparedStatement() throws SQLException, ClassNotFoundException {
+        Connection connection = new MySQLConnector().getMySQLConnection();
+        CityManagerImpl cityManager = new CityManagerImpl();
+        Set<City> cities = cityManager.findCityByCountryCodeBetweenPopulation(connection, "ESP", 100000, 250000);
+        System.out.println(cities);
+        System.out.println("Total de elementos: " + cities.size());
     }
 
 }
