@@ -1,6 +1,5 @@
 package edu.fpdual.jdbc.ejemplojdbc.manager.impl;
 
-import edu.fpdual.jdbc.ejemplojdbc.connector.MySQLConnector;
 import edu.fpdual.jdbc.ejemplojdbc.dao.City;
 import edu.fpdual.jdbc.ejemplojdbc.manager.CityManager;
 
@@ -12,14 +11,14 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CityManagerImpl implements CityManager {
+public class CityLimitedManagerImpl implements CityManager {
 
     @Override
     public Set<City> findAllCities(Connection connection){
 
         try(Statement stm = connection.createStatement()) {
 
-            ResultSet result = stm.executeQuery("SELECT * FROM city");
+            ResultSet result = stm.executeQuery("SELECT * FROM city limit 10");
 
             Set<City> citySet = new HashSet<>();
             result.beforeFirst();

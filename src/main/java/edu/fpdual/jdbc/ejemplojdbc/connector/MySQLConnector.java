@@ -62,7 +62,7 @@ public class MySQLConnector {
      * @return an URL
      */
     private String getURL() {
-        //jdbc:mysql://localhost:3306/world?user=sa&password=12345678&useSSL=false;
+        //jdbc:mysql://localhost:3306/world?user=sa&password=12345678&useSSL=false; + other attributes required by the DB.
         return new StringBuilder().append(prop.getProperty(MySQLConstants.URL_PREFIX))
                 .append(prop.getProperty(MySQLConstants.URL_HOST)).append(":")
                 .append(prop.getProperty(MySQLConstants.URL_PORT)).append("/")
@@ -74,38 +74,6 @@ public class MySQLConnector {
                 .append(prop.getProperty(MySQLConstants.USE_JDBC_COMPLIANT_TIMEZONE_SHIFT)).append(("&useLegacyDatetimeCode="))
                 .append(prop.getProperty(MySQLConstants.USE_LEGACY_DATE_TIME_CODE)).append(("&serverTimezone="))
                 .append(prop.getProperty(MySQLConstants.SERVER_TIMEZONE)).toString();
-    }
-
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        ejemploPreparedStatement();
-    }
-
-    private static void ejemploStatement() throws SQLException, ClassNotFoundException {
-        MySQLConnector connector = new MySQLConnector();
-
-        try(Connection connection = connector.getMySQLConnection();
-            Statement stm = connection.createStatement()) {
-            ResultSet result = stm.executeQuery("SELECT Id, Name, District FROM world.city where CountryCode = 'ESP'");
-
-            int counter = 0;
-            result.beforeFirst();
-            while (result.next()) {
-                int id = result.getInt("Id");
-                String name = result.getString("Name");
-                String district = result.getString("District");
-                System.out.println(id + " " + name + " " + district);
-                counter++;
-            }
-            System.out.println("Total de elementos: " + counter);
-        }
-    }
-
-    private static void ejemploPreparedStatement() throws SQLException, ClassNotFoundException {
-        Connection connection = new MySQLConnector().getMySQLConnection();
-        CityManagerImpl cityManager = new CityManagerImpl();
-        Set<City> cities = cityManager.findCityByCountryCodeBetweenPopulation(connection, "ESP", 100000, 250000);
-        System.out.println(cities);
-        System.out.println("Total de elementos: " + cities.size());
     }
 
 }
